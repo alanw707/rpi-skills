@@ -11,7 +11,7 @@ Compatible with Pi and any coding agent harness that can load standard Agent Ski
 ## Credits
 
 This framework draws from:
-- **Human Layers' RPI methodology** ([RPI framework video](https://www.youtube.com/@HumanLayersStudio)) — foundational workflow phases and delivery discipline
+- **Human Layers' RPI methodology** ([GitHub](https://github.com/humanlayer)) — foundational workflow phases and delivery discipline
 - **BMAD (Best Model for Architectural Decisions)** — decision documentation and architecture validation
 - **Matt Pollock's Agent Skills** — skill organization, artifact patterns, and harness integration
 
@@ -504,5 +504,5 @@ MIT
 ## See Also
 
 - [Agent Skills Standard](https://agentskills.io/specification)
-- [Human Layers Studio](https://www.youtube.com/@HumanLayersStudio) — RPI methodology and delivery discipline
+- [Human Layers](https://github.com/humanlayer) — RPI methodology and delivery discipline
 - [Pi Coding Agent](https://pi.dev)
