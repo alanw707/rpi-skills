@@ -78,7 +78,7 @@ pi install git:github.com/alanw707/rpi-skills
 # From git with pinned tag
 pi install git:github.com/alanw707/rpi-skills@v0.1.0
 
-# From npm registry (after first publish)
+# From npm registry
 pi install npm:@alanw707/rpi-skills
 
 # Local development path
