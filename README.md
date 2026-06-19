@@ -525,6 +525,7 @@ MIT
 
 ## See Also
 
+- [RPI Workflow Guide](docs/rpi-workflow.md) — detailed workflow doc with phase-by-phase breakdown
 - [Agent Skills Standard](https://agentskills.io/specification)
 - [Human Layers](https://github.com/humanlayer) — RPI methodology and delivery discipline
 - [Matt Pollock's Agent Skills](https://github.com/mattpocock/skills) — skill architecture and harness patterns
