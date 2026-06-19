@@ -28,6 +28,7 @@
     "LICENSE"
   ],
   "scripts": {
+    "setup": "node scripts/setup.js",
     "validate": "node scripts/validate-skills.js",
     "prepublishOnly": "npm run validate"
   },

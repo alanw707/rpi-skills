@@ -33,30 +33,82 @@ This framework draws from:
 - `rpi-spec-to-speckit-spec`
 - `rpi-tasks-to-speckit-tasks`
 
-## Install
+## Installation
 
-### Generic Agent Skills layout
-If your coding agent supports the Agent Skills standard, point it at the `skills/` directory from this repo or package.
+### Quick Start (Auto-Detect Harness)
 
-### Pi install from git
+If you have Node.js installed:
+
 ```bash
+npx @alanw707/rpi-skills setup
+```
+
+This script detects your coding agent (Pi, Claude Code, OpenAI Codex, etc.) and provides exact installation commands.
+
+### Pi (Coding Agent)
+
+```bash
+# From git (always latest)
 pi install git:github.com/alanw707/rpi-skills
-```
 
-### Pi install pinned tag
-```bash
+# From git with pinned tag
 pi install git:github.com/alanw707/rpi-skills@v0.1.0
-```
 
-### Pi install from npm
-```bash
+# From npm registry (after first publish)
 pi install npm:@alanw707/rpi-skills
+
+# Local development path
+pi install /path/to/rpi-skills
 ```
 
-### Local development path
+### Claude Code
+
+**Option 1: Symlink (recommended)**
 ```bash
-pi install /c/rpi-skills
+git clone https://github.com/alanw707/rpi-skills.git /tmp/rpi-skills
+ln -s /tmp/rpi-skills/skills ~/.claude/skills/rpi-skills
 ```
+
+**Option 2: Copy**
+```bash
+git clone https://github.com/alanw707/rpi-skills.git
+cp -r rpi-skills/skills/* ~/.claude/skills/
+```
+
+Then restart Claude.
+
+### OpenAI Codex
+
+**Symlink:**
+```bash
+git clone https://github.com/alanw707/rpi-skills.git /tmp/rpi-skills
+ln -s /tmp/rpi-skills/skills ~/.openai-codex/skills/rpi-skills
+```
+
+### Generic Agent Skills Harness
+
+If your harness loads from `~/.agents/skills/` or a custom path:
+
+```bash
+# Clone repo
+git clone https://github.com/alanw707/rpi-skills.git
+
+# Symlink skills directory
+ln -s ./rpi-skills/skills ~/.agents/skills/rpi-skills
+```
+
+Or configure your harness to load skills from: `<repo>/rpi-skills/skills`
+
+### NPM Dependency (For Custom Harnesses)
+
+If your harness supports npm packages:
+
+```bash
+npm install @alanw707/rpi-skills
+```
+
+Then reference: `node_modules/@alanw707/rpi-skills/skills`
+
 
 ## Detailed Usage Guide
 
@@ -366,19 +418,64 @@ npm run validate
 
 For Pi users, the package manifest lives in `package.json` under `pi.skills`. Other harnesses can consume the `skills/` directory directly.
 
-## Publish to npm
+## Publishing to npm
 
-Package prepared for scoped public publish:
-- package name: `@alanw707/rpi-skills`
-- `publishConfig.access = public`
-- `prepublishOnly` runs validation before publish
+This package is prepared for scoped public publish on npm. When ready to publish:
 
-When ready:
+### Prerequisites
+
+1. **npm account** — Create one at [npmjs.com](https://www.npmjs.com) if you don't have one
+2. **Authenticated locally:**
+   ```bash
+   npm login
+   ```
+   (Enter your npm username, password, and 2FA code if enabled)
+
+### Pre-publish checklist
+
+- [ ] All skills validated: `npm run validate` ✓
+- [ ] Version bumped in `package.json` (semantic versioning)
+- [ ] `CHANGELOG.md` updated (optional but recommended)
+- [ ] All changes committed and pushed to GitHub
+- [ ] Git tag created: `git tag v0.1.0 && git push origin v0.1.0`
+
+### Publish
 
 ```bash
-npm login
 npm publish
 ```
+
+The `prepublishOnly` script in `package.json` will run validation automatically before publishing.
+
+### After publish
+
+Users can install immediately:
+```bash
+# Pi
+pi install npm:@alanw707/rpi-skills
+
+# NPM + custom harness
+npm install @alanw707/rpi-skills
+```
+
+### Unpublish (if needed)
+
+Within 72 hours of publish:
+```bash
+npm unpublish @alanw707/rpi-skills@0.1.0
+```
+
+After 72 hours, contact npm support.
+
+### Future versions
+
+For subsequent releases:
+
+1. Update version in `package.json`
+2. Update `CHANGELOG.md`
+3. Commit and push
+4. Tag: `git tag v0.2.0 && git push origin v0.2.0`
+5. Publish: `npm publish`
 
 ## Repo layout
 
