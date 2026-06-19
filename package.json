@@ -1,7 +1,7 @@
 {
   "name": "@alanw707/rpi-skills",
   "version": "0.1.0",
-  "description": "RPI family skills for Pi: context, spec, research, plan, implement, review, and handoff workflows for structured software delivery.",
+  "description": "RPI family Agent Skills: context, spec, research, plan, implement, review, and handoff workflows for structured software delivery across coding agents.",
   "keywords": [
     "pi-package",
     "pi-skills",

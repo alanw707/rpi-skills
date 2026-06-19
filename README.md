@@ -2,9 +2,11 @@
 
 [![validate](https://github.com/alanw707/rpi-skills/actions/workflows/validate.yml/badge.svg)](https://github.com/alanw707/rpi-skills/actions/workflows/validate.yml)
 [![license](https://img.shields.io/github/license/alanw707/rpi-skills)](LICENSE)
-[![pi package](https://img.shields.io/badge/pi-package-blue)](https://pi.dev)
+[![agent skills](https://img.shields.io/badge/agent-skills-standard-blue)](https://agentskills.io/specification)
 
-RPI (Requirements, Planning, Implementation) skill family for Pi. Structured delivery workflow for brownfield and greenfield work: normalize requirements, prove current state, plan in explicit artifacts, implement in validated batches, then review against the artifact chain.
+RPI (Requirements, Planning, Implementation) skill family. Agent Skills standard package for brownfield and greenfield delivery work: normalize requirements, prove current state, plan in explicit artifacts, implement in validated batches, then review against the artifact chain.
+
+Compatible with Pi and any coding agent harness that can load standard Agent Skills directories.
 
 ## What this package includes
 
@@ -26,17 +28,20 @@ RPI (Requirements, Planning, Implementation) skill family for Pi. Structured del
 
 ## Install
 
-### From git
+### Generic Agent Skills layout
+If your coding agent supports the Agent Skills standard, point it at the `skills/` directory from this repo or package.
+
+### Pi install from git
 ```bash
 pi install git:github.com/alanw707/rpi-skills
 ```
 
-### Pinned tag
+### Pi install pinned tag
 ```bash
 pi install git:github.com/alanw707/rpi-skills@v0.1.0
 ```
 
-### From npm
+### Pi install from npm
 ```bash
 pi install npm:@alanw707/rpi-skills
 ```
@@ -56,7 +61,7 @@ Load explicitly:
 /skill:rpi-review
 ```
 
-Or let Pi auto-load the right skill from its description.
+Or let your coding agent auto-load the right skill from its description.
 
 ## Recommended entry points
 
@@ -98,11 +103,11 @@ Validate all packaged skills locally:
 npm run validate
 ```
 
-Pi package manifest lives in `package.json` under `pi.skills`.
+For Pi users, the package manifest lives in `package.json` under `pi.skills`. Other harnesses can consume the `skills/` directory directly.
 
 ## Publish to npm
 
-Package already prepared for scoped public publish:
+Package prepared for scoped public publish:
 - package name: `@alanw707/rpi-skills`
 - `publishConfig.access = public`
 - `prepublishOnly` runs validation before publish
