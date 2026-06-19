@@ -8,6 +8,13 @@ RPI (Requirements, Planning, Implementation) skill family. Agent Skills standard
 
 Compatible with Pi and any coding agent harness that can load standard Agent Skills directories.
 
+## Credits
+
+This framework draws from:
+- **Human Layers' RPI methodology** ([RPI framework video](https://www.youtube.com/@HumanLayersStudio)) — foundational workflow phases and delivery discipline
+- **BMAD (Best Model for Architectural Decisions)** — decision documentation and architecture validation
+- **Matt Pollock's Agent Skills** — skill organization, artifact patterns, and harness integration
+
 ## What this package includes
 
 ### Core pipeline skills
@@ -51,49 +58,303 @@ pi install npm:@alanw707/rpi-skills
 pi install /c/rpi-skills
 ```
 
-## Usage
+## Detailed Usage Guide
 
-Load explicitly:
+### Understanding the RPI Pipeline
 
-```text
-/skill:rpi-plan
+The RPI pipeline structures delivery work into **7 ordered phases**, each with a specific role, inputs, outputs, and exit gates. The phases are not linear dogma — they're a discipline to prevent common mistakes like implementing unresearched solutions or skipping specification clarity.
+
+**Key concept:** Each phase produces durable artifacts in `docs/` that serve as input to downstream phases. Artifacts stay in the repo so future work doesn't rediscover the same facts.
+
+### Phase Breakdown
+
+#### 1. **rpi-context** (systems-cartographer)
+**When:** Once per repo, when durable repo-level context is missing, stale, or disputed.
+
+**What it does:**
+- Captures project purpose, tech stack, and exact build/test commands
+- Produces a curated project structure tree (box-drawing ASCII, no glob shorthand)
+- Maps the core domain: actors, workflows, hotspots
+- Creates a durable state graph (Mermaid or ASCII) showing the most stable system representation
+
+**Produces:**
+- `docs/project-context.md` (50–100 lines: purpose, actors, workflows, guardrails)
+- `docs/project-structure.md` (tree + module map)
+- `docs/state-graph.md` (Mermaid or ASCII)
+
+**How to use:**
+```
+/skill:rpi-context
+```
+Then answer: What is this repo's purpose? What's the tech stack? What are the 3–5 key workflows? The skill will guide you through 7 steps and validate completeness at the end.
+
+---
+
+#### 2. **rpi-spec** (requirements-analyst)
+**When:** Raw requirements are scattered (tickets, chat, PRD, PR comments) and acceptance criteria are ambiguous.
+
+**What it does:**
+- Normalizes raw asks into a scoped, testable contract
+- Separates goals from non-goals
+- Maps current-state against requested changes (matrix: already true, not true, unknown)
+- Surfaces design questions and open blockers explicitly
+
+**Produces:**
+- `docs/specs/<slug>.md` — normalization contract with ACs, design questions, current-state matrix
+
+**How to use:**
+```
+/skill:rpi-spec
+```
+Provide the scattered requirements (link, paste, or describe). The skill structures them into a scoped contract. Do **not** start here if scope is already crystal clear; skip to `rpi-research` instead.
+
+---
+
+#### 3. **rpi-research** (forensic-investigator)
+**When:** Non-trivial existing-code change and you need current-state proof before planning.
+
+**What it does:**
+- Traces the code path from trigger → orchestration → downstream effects
+- Maps the affected module slice (current state only, no solution shape)
+- Collects evidence for design questions
+- Separates verified facts from unknowns
+
+**Produces:**
+- `docs/scope-research/<slug>-research.md` — facts, workflow trace, code map, design evidence, blockers
+
+**How to use:**
+```
 /skill:rpi-research
+```
+Provide: spec (if one exists), or the raw change request. The skill will bootstrap from `docs/project-context.md` if present, then dive into the code. It outputs plan-readiness verdict: ready or not-ready.
+
+---
+
+#### 4. **rpi-grillme** (greenfield-interrogator)
+**When:** Repo is absent or too thin for honest current-state research. New idea needs foundation decisions before planning.
+
+**What it does:**
+- Interrogates one question at a time: What is the goal? What's the stack? What's the architecture shape? How do we bootstrap?
+- Resolves terminology and constraints explicitly
+- Defines first vertical slice to avoid analysis paralysis
+
+**Produces:**
+- `docs/scope-research/<slug>-foundation.md` — goals, stack, architecture shape, bootstrap, first slice
+
+**How to use:**
+```
+/skill:rpi-grillme
+```
+Use when starting a new repo or when the current repo is too thin. Answer questions one at a time. Do not batch them or skip them.
+
+---
+
+#### 5. **rpi-plan** (delivery-architect)
+**When:** Research is done (or greenfield foundation is set), and you need to sequence work and resolve design questions.
+
+**What it does:**
+- Transforms verified gaps into ordered tasks with dependencies
+- Creates design-discussion artifact (decision evidence for ambiguous choices)
+- Maps planned structure (file layout, module shape, seams, integrations)
+- Specifies validation per task and at final gate
+
+**Produces:**
+- `docs/scope-research/<slug>-plan.md` — ordered tasks, per-task validation, rollback
+- `docs/scope-research/<slug>-design-discussion.md` — design choices and evidence
+- `docs/scope-research/<slug>-planned-structure.md` — file layout, module responsibilities
+
+**How to use:**
+```
+/skill:rpi-plan
+```
+Provide: research artifact (or foundation artifact if greenfield). The skill creates a planning pack and validates against `rpi-pipeline.yml` ordering rules.
+
+---
+
+#### 6. **rpi-implement** (implementation-executor)
+**When:** Plan exists, decisions are recorded, and it's time to code.
+
+**What it does:**
+- Executes planned tasks one batch at a time
+- Runs validation after each batch
+- Stops immediately if implementation reaches outside planned scope or breaks a design decision
+- Produces resumable summary at end
+
+**Produces:**
+- Code changes in the repository
+- Validation evidence in session transcript
+- Implementation summary (completed tasks, remaining, risks)
+
+**How to use:**
+```
+/skill:rpi-implement
+```
+The skill loads your plan pack and guides you through each task. It enforces:
+- Every code change maps to a planned task
+- Validation runs after meaningful edits
+- Scope drift is caught and routed back to planning
+
+---
+
+#### 7. **rpi-review** (post-implementation-reviewer)
+**When:** Implementation is complete, or you want a planning-phase quality check.
+
+**What it does:**
+- **Post-impl mode:** Validates artifact chain, runs code review against spec/plan, surfaces architecture opportunities
+- **Planning-phase mode:** Checks planning artifact coherence before implementation begins
+
+**Produces:**
+- `docs/scope-research/<slug>-review.md` — findings with routing labels (back to spec, research, plan, etc.)
+
+**How to use:**
+```
 /skill:rpi-review
 ```
+Provide: all artifacts (spec if it exists, plan, design-discussion, planned-structure). The skill validates completeness and surfaces issues for re-planning if needed.
 
-Or let your coding agent auto-load the right skill from its description.
+---
 
-## Recommended entry points
+### Recommended Workflows
 
-### Brownfield / existing repo
-1. `rpi-context` once per repo when durable context is missing or stale
-2. `rpi-spec` when requirements are scattered, raw, or ambiguous
-3. `rpi-research` for non-trivial existing-code change
-4. `rpi-plan` for sequencing, design discussion, and validation planning
-5. `rpi-implement` for execution
-6. `rpi-review` for artifact and code review
+#### Brownfield / Existing Repository
 
-### Greenfield / too-thin repo
-1. `rpi-spec` if external requirements need normalization
-2. `rpi-grillme` for stack, terminology, bootstrap, and first-slice decisions
-3. `rpi-plan`
-4. `rpi-implement`
-5. `rpi-review`
-6. `rpi-context` later, once a real codebase slice exists
+**Typical path:**
 
-## Artifact model
+1. **Context** (once per repo)
+   ```
+   /skill:rpi-context
+   → docs/project-context.md, project-structure.md, state-graph.md
+   ```
 
-Typical artifacts written by the family:
-- `docs/project-context.md`
-- `docs/project-structure.md`
-- `docs/state-graph.md`
-- `docs/specs/<slug>.md`
-- `docs/scope-research/<slug>-research.md`
-- `docs/scope-research/<slug>-foundation.md`
-- `docs/scope-research/<slug>-plan.md`
-- `docs/scope-research/<slug>-design-discussion.md`
-- `docs/scope-research/<slug>-planned-structure.md`
-- `docs/scope-research/<slug>-review.md`
+2. **Spec** (if requirements are scattered)
+   ```
+   /skill:rpi-spec
+   → docs/specs/<slug>.md
+   ```
+
+3. **Research** (prove current state)
+   ```
+   /skill:rpi-research
+   → docs/scope-research/<slug>-research.md
+   ```
+
+4. **Plan** (sequence the work)
+   ```
+   /skill:rpi-plan
+   → docs/scope-research/<slug>-plan.md
+   → docs/scope-research/<slug>-design-discussion.md
+   → docs/scope-research/<slug>-planned-structure.md
+   ```
+
+5. **Implement** (execute tasks)
+   ```
+   /skill:rpi-implement
+   → code changes + validation
+   ```
+
+6. **Review** (validate everything)
+   ```
+   /skill:rpi-review
+   → docs/scope-research/<slug>-review.md
+   ```
+
+#### Greenfield / Too-Thin Repository
+
+**Typical path:**
+
+1. **Foundation** (architecture + bootstrap decisions)
+   ```
+   /skill:rpi-grillme
+   → docs/scope-research/<slug>-foundation.md
+   ```
+
+2. **Plan** (sequence first vertical slice)
+   ```
+   /skill:rpi-plan
+   → docs/scope-research/<slug>-plan.md
+   ```
+
+3. **Implement** (build first slice)
+   ```
+   /skill:rpi-implement
+   → code + validation
+   ```
+
+4. **Review** (validate architecture)
+   ```
+   /skill:rpi-review
+   → docs/scope-research/<slug>-review.md
+   ```
+
+5. **Context** (once repo has real code)
+   ```
+   /skill:rpi-context
+   → docs/project-context.md, etc.
+   ```
+
+#### Direct Research (Scope Already Clear)
+
+Skip spec, go straight to research:
+
+```
+/skill:rpi-research
+→ /skill:rpi-plan
+→ /skill:rpi-implement
+→ /skill:rpi-review
+```
+
+### Key Discipline Rules
+
+**Do:**
+- Run `rpi-context` **once per repo** — reuse it for all future work
+- Separate **facts from unknowns** during research
+- **Name design questions** explicitly in spec or research
+- Write **validation commands exactly** (e.g., `npm test -- --testNamePattern="auth flow"`, not "run tests")
+- Keep artifacts **focused and under 100 lines** (except trees/graphs which need more room)
+- **Trace every code change back to a planned task** during implement
+
+**Do Not:**
+- Skip research on non-trivial changes to existing code
+- Implement unresearched or unplanned scope
+- Batch design questions ("we'll figure it out later")
+- Leave ambiguity in specifications
+- Change planned design decisions mid-implement without re-planning
+- Use repo-level context docs for story-specific scope
+
+### Replan Triggers
+
+Stop and return to an earlier phase if any of these occur:
+
+- Research disproves a spec premise
+- Implementation reaches outside researched module slice
+- Design question becomes ambiguous again
+- Build/test command cannot be stated exactly
+- A researched premise or design decision proves invalid
+
+When triggered, route findings back to the phase that produced the bad assumption, fix it, and proceed.
+
+### Artifact Model
+
+Standard locations and naming:
+
+```
+docs/
+├── project-context.md
+├── project-structure.md
+├── state-graph.md
+└── scope-research/
+    ├── <slug>-spec.md
+    ├── <slug>-foundation.md
+    ├── <slug>-research.md
+    ├── <slug>-plan.md
+    ├── <slug>-design-discussion.md
+    ├── <slug>-planned-structure.md
+    └── <slug>-review.md
+```
+
+Each artifact stays in the repo permanently. Future work references them, saving rediscovery.
+
+---
 
 ## Development
 
@@ -142,3 +403,9 @@ scripts/
 ## License
 
 MIT
+
+## See Also
+
+- [Agent Skills Standard](https://agentskills.io/specification)
+- [Human Layers Studio](https://www.youtube.com/@HumanLayersStudio) — RPI methodology and delivery discipline
+- [Pi Coding Agent](https://pi.dev)
