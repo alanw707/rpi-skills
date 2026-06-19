@@ -27,6 +27,9 @@
     "README.md",
     "LICENSE"
   ],
+  "bin": {
+    "rpi-skills": "scripts/setup.js"
+  },
   "scripts": {
     "setup": "node scripts/setup.js",
     "validate": "node scripts/validate-skills.js",
