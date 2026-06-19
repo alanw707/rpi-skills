@@ -59,7 +59,7 @@ This framework draws inspiration and patterns from:
 
 ## Installation
 
-### Quick Start (Auto-Detect Harness)
+### Quick Start (Interactive Installer)
 
 If you have Node.js installed:
 
@@ -67,7 +67,20 @@ If you have Node.js installed:
 npx @alanw707/rpi-skills setup
 ```
 
-This script detects your coding agent (Pi, Claude Code, OpenAI Codex, etc.) and provides exact installation commands.
+The installer asks which harness to install for, where to install skills, whether to copy or symlink, and which skills to install. Copy mode is recommended for `npx` because npm cache paths can be temporary.
+
+For automation:
+
+```bash
+# Install every skill for Pi
+npx @alanw707/rpi-skills setup --harness pi --all --copy --yes
+
+# Install selected skills into a custom directory
+npx @alanw707/rpi-skills setup --target ~/.agents/skills --skills rpi-spec,rpi-plan --copy --yes
+
+# Print commands without changing files
+npx @alanw707/rpi-skills setup --harness pi --all --print --yes
+```
 
 ### Pi (Coding Agent)
 
