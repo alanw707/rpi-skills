@@ -10,10 +10,32 @@ Compatible with Pi and any coding agent harness that can load standard Agent Ski
 
 ## Credits
 
-This framework draws from:
-- **Human Layers' RPI methodology** ([GitHub](https://github.com/humanlayer)) — foundational workflow phases and delivery discipline
-- **BMAD (Best Model for Architectural Decisions)** — decision documentation and architecture validation
-- **Matt Pollock's Agent Skills** — skill organization, artifact patterns, and harness integration
+This framework draws inspiration and patterns from:
+
+- **Human Layers' RPI methodology** ([GitHub](https://github.com/humanlayer)) — foundational delivery phases, discipline structure, and replan triggers that form the core pipeline
+
+- **Matt Pollock's Agent Skills** ([GitHub: mattpocock/skills](https://github.com/mattpocock/skills)) — skill architecture, artifact organization patterns, harness integration, and cross-harness compatibility design
+
+- **BMAD (Best Model for Architectural Decisions)** — decision documentation discipline, architecture validation gates, and design-question evidence collection practices that inform the `rpi-plan` and `rpi-review` phases
+
+## Influences in Practice
+
+**From Human Layers:**
+- Phase ordering and entry gates
+- Replan triggers and decision checkpoints
+- Artifact-driven workflow discipline
+
+**From Matt Pollock's Skills:**
+- Portable skill structure (works across harnesses)
+- SKILL.md frontmatter convention
+- Artifact naming and co-location patterns
+- Multi-harness installation patterns
+
+**From BMAD:**
+- Design-question evidence collection in `rpi-spec`
+- Architecture decision recording in plan phase
+- Review gates for decision validation
+- Separation of facts from unknowns in artifacts
 
 ## What this package includes
 
@@ -505,4 +527,5 @@ MIT
 
 - [Agent Skills Standard](https://agentskills.io/specification)
 - [Human Layers](https://github.com/humanlayer) — RPI methodology and delivery discipline
-- [Pi Coding Agent](https://pi.dev)
+- [Matt Pollock's Agent Skills](https://github.com/mattpocock/skills) — skill architecture and harness patterns
+- [Pi Coding Agent](https://pi.dev) — Pi harness implementation
