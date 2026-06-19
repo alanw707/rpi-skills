@@ -2,14 +2,44 @@
   "name": "@alanw707/rpi-skills",
   "version": "0.1.0",
   "description": "RPI family skills for Pi: context, spec, research, plan, implement, review, and handoff workflows for structured software delivery.",
-  "keywords": ["pi-package", "pi-skills", "agent-skills", "rpi", "workflow", "planning", "delivery"],
+  "keywords": [
+    "pi-package",
+    "pi-skills",
+    "agent-skills",
+    "rpi",
+    "workflow",
+    "planning",
+    "delivery"
+  ],
   "license": "MIT",
   "author": "alanw707",
+  "homepage": "https://github.com/alanw707/rpi-skills#readme",
+  "bugs": {
+    "url": "https://github.com/alanw707/rpi-skills/issues"
+  },
   "repository": {
     "type": "git",
-    "url": "https://github.com/alanw707/rpi-skills"
+    "url": "git+https://github.com/alanw707/rpi-skills.git"
+  },
+  "files": [
+    "skills",
+    "scripts",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "validate": "node scripts/validate-skills.js",
+    "prepublishOnly": "npm run validate"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=18"
   },
   "pi": {
-    "skills": ["./skills"]
+    "skills": [
+      "./skills"
+    ]
   }
 }

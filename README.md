@@ -1,98 +1,138 @@
 # RPI Skills
 
-RPI (Requirements-Planning-Implementation) skill family for Pi — a structured delivery workflow for software development.
+[![validate](https://github.com/alanw707/rpi-skills/actions/workflows/validate.yml/badge.svg)](https://github.com/alanw707/rpi-skills/actions/workflows/validate.yml)
+[![license](https://img.shields.io/github/license/alanw707/rpi-skills)](LICENSE)
+[![pi package](https://img.shields.io/badge/pi-package-blue)](https://pi.dev)
 
-## Overview
+RPI (Requirements, Planning, Implementation) skill family for Pi. Structured delivery workflow for brownfield and greenfield work: normalize requirements, prove current state, plan in explicit artifacts, implement in validated batches, then review against the artifact chain.
 
-The RPI pipeline breaks down complex software delivery into 7 phases, each with a specific role and artifact:
+## What this package includes
 
-1. **rpi-context** — Project orientation, structure maps, and durable context (systems-cartographer)
-2. **rpi-spec** — Normalize raw requirements into a scoped, testable contract (requirements-analyst)
-3. **rpi-research** — Prove current state and map the affected code slice (forensic-investigator)
-4. **rpi-grillme** — Resolve greenfield foundation decisions one question at a time (greenfield-interrogator)
-5. **rpi-plan** — Transform verified gaps into sequenced tasks and design decisions (delivery-architect)
-6. **rpi-implement** — Execute planned tasks in validated batches (implementation-executor)
-7. **rpi-review** — Validate artifact chain and code against spec/plan (post-implementation-reviewer)
+### Core pipeline skills
+- `rpi-context` — durable repo-level context, structure map, state graph
+- `rpi-spec` — normalize raw requirements into a scoped, testable contract
+- `rpi-research` — prove current state and map the affected code slice
+- `rpi-grillme` — resolve greenfield foundation decisions one question at a time
+- `rpi-plan` — turn verified gaps into tasks, design decisions, and validation
+- `rpi-implement` — execute planned tasks in validated batches
+- `rpi-review` — review artifact coherence, code, and architecture follow-through
+- `rpi-handoff` — capture resumable implementation/review handoff context
+- `rpi-pipeline` — authoritative shared vocabulary and pipeline contract
 
-Plus three converters:
-- **rpi-plan-to-speckit-plan** — Convert RPI plan format to SpecKit format
-- **rpi-spec-to-speckit-spec** — Convert RPI spec format to SpecKit format
-- **rpi-tasks-to-speckit-tasks** — Convert RPI task format to SpecKit format
+### Conversion helpers
+- `rpi-plan-to-speckit-plan`
+- `rpi-spec-to-speckit-spec`
+- `rpi-tasks-to-speckit-tasks`
 
-And the shared contract:
-- **rpi-pipeline** — Authoritative pipeline contract: phases, gates, roles, ordering rules, replan triggers
-
-## Installation
+## Install
 
 ### From git
 ```bash
 pi install git:github.com/alanw707/rpi-skills
 ```
 
-### Pinned version
+### Pinned tag
 ```bash
 pi install git:github.com/alanw707/rpi-skills@v0.1.0
 ```
 
-### Local path (development)
+### From npm
+```bash
+pi install npm:@alanw707/rpi-skills
+```
+
+### Local development path
 ```bash
 pi install /c/rpi-skills
 ```
 
 ## Usage
 
-### Quick start
-1. Read `rpi-context` to understand project scope and structure
-2. Use `rpi-spec` if raw requirements need normalization
-3. Use `rpi-research` for non-trivial existing-code changes
-4. Use `rpi-grillme` for greenfield foundation decisions
-5. Use `rpi-plan` to sequence work and resolve design questions
-6. Use `rpi-implement` to execute planned tasks with validation
-7. Use `rpi-review` to validate the full artifact chain
+Load explicitly:
 
-### Loading a specific skill
-```
+```text
 /skill:rpi-plan
 /skill:rpi-research
+/skill:rpi-review
 ```
 
-See each skill's `SKILL.md` for detailed role definitions and workflow steps.
+Or let Pi auto-load the right skill from its description.
 
-## Key Concepts
+## Recommended entry points
 
-### Phases
-- **context:** repo-level understanding, structure, workflows
-- **spec:** requirement normalization, acceptance criteria, design questions
-- **research:** current-state proof, code mapping, blocker identification
-- **greenfield-foundation:** architecture and bootstrap decisions for new projects
-- **plan:** task sequencing, design discussion resolution, validation planning
-- **implement:** code execution with incremental validation
-- **review:** artifact chain validation, two-axis code review, architecture feedback
+### Brownfield / existing repo
+1. `rpi-context` once per repo when durable context is missing or stale
+2. `rpi-spec` when requirements are scattered, raw, or ambiguous
+3. `rpi-research` for non-trivial existing-code change
+4. `rpi-plan` for sequencing, design discussion, and validation planning
+5. `rpi-implement` for execution
+6. `rpi-review` for artifact and code review
 
-### Artifacts
-Each phase produces specific, reusable artifacts under `docs/`:
-- `docs/project-context.md`, `project-structure.md`, `state-graph.md` (context phase)
-- `docs/specs/<slug>.md` (spec phase)
-- `docs/scope-research/<slug>-research.md` (research phase)
-- `docs/scope-research/<slug>-foundation.md` (greenfield phase)
-- `docs/scope-research/<slug>-plan.md`, `<slug>-design-discussion.md`, `<slug>-planned-structure.md` (plan phase)
-- code changes + validation evidence (implement phase)
-- `docs/scope-research/<slug>-review.md` (review phase)
+### Greenfield / too-thin repo
+1. `rpi-spec` if external requirements need normalization
+2. `rpi-grillme` for stack, terminology, bootstrap, and first-slice decisions
+3. `rpi-plan`
+4. `rpi-implement`
+5. `rpi-review`
+6. `rpi-context` later, once a real codebase slice exists
 
-## Workflows & Entry Points
+## Artifact model
 
-**Typical brownfield (existing repo):**
-- start at `rpi-context` once per repo
-- then `rpi-research` for non-trivial changes
-- then `rpi-plan` if multiple files or sequencing needed
-- then `rpi-implement` with continuous validation
-- then `rpi-review` post-implementation
+Typical artifacts written by the family:
+- `docs/project-context.md`
+- `docs/project-structure.md`
+- `docs/state-graph.md`
+- `docs/specs/<slug>.md`
+- `docs/scope-research/<slug>-research.md`
+- `docs/scope-research/<slug>-foundation.md`
+- `docs/scope-research/<slug>-plan.md`
+- `docs/scope-research/<slug>-design-discussion.md`
+- `docs/scope-research/<slug>-planned-structure.md`
+- `docs/scope-research/<slug>-review.md`
 
-**Typical greenfield (new project):**
-- start at `rpi-grillme` for foundation decisions
-- then `rpi-plan` to sequence bootstrap and first vertical slice
-- then `rpi-implement` with the planned tasks
-- then `rpi-review` for validation
+## Development
+
+Validate all packaged skills locally:
+
+```bash
+npm run validate
+```
+
+Pi package manifest lives in `package.json` under `pi.skills`.
+
+## Publish to npm
+
+Package already prepared for scoped public publish:
+- package name: `@alanw707/rpi-skills`
+- `publishConfig.access = public`
+- `prepublishOnly` runs validation before publish
+
+When ready:
+
+```bash
+npm login
+npm publish
+```
+
+## Repo layout
+
+```text
+skills/
+  rpi-context/
+  rpi-grillme/
+  rpi-handoff/
+  rpi-implement/
+  rpi-pipeline/
+  rpi-plan/
+  rpi-plan-to-speckit-plan/
+  rpi-research/
+  rpi-review/
+  rpi-spec/
+  rpi-spec-to-speckit-spec/
+  rpi-tasks-to-speckit-tasks/
+scripts/
+  validate-skills.js
+```
 
 ## License
 
