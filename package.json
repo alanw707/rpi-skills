@@ -1,6 +1,6 @@
 {
   "name": "@alanw707/rpi-skills",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "RPI family Agent Skills: context, spec, research, plan, implement, review, and handoff workflows for structured software delivery across coding agents.",
   "keywords": [
     "pi-package",
@@ -32,6 +32,7 @@
   },
   "scripts": {
     "setup": "node scripts/setup.js",
+    "test:setup": "node scripts/test-setup.js",
     "validate": "node scripts/validate-skills.js",
     "prepublishOnly": "npm run validate"
   },
@@ -45,5 +46,8 @@
     "skills": [
       "./skills"
     ]
+  },
+  "dependencies": {
+    "@inquirer/prompts": "8.5.2"
   }
 }
