@@ -8,6 +8,8 @@ RPI (Requirements, Planning, Implementation) skill family. Agent Skills standard
 
 Compatible with Pi and any coding agent harness that can load standard Agent Skills directories.
 
+> **New to RPI?** Start with the [RPI Workflow Guide](docs/rpi-workflow.md) — covers all phases, when to use each skill, recommended flows, and example prompts.
+
 ## Credits
 
 This framework draws inspiration and patterns from:
