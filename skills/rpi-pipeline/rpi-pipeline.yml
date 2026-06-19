@@ -1,0 +1,186 @@
+version: 2
+name: rpi-pipeline
+description: Authoritative pipeline contract for the RPI skill family — phases, gates, roles, and replan triggers.
+
+base_inputs: [docs/project-context.md (if present), docs/project-structure.md (if present), docs/state-graph.md (if present)]
+
+phases:
+  - id: context
+    skill: rpi-context
+    role: systems-cartographer
+    required_when: New repo/worktree, or project-context.md stale/missing
+    outputs: [docs/project-context.md, docs/project-structure.md, docs/state-graph.md]
+    handoff_to: [spec, research]
+
+  - id: spec
+    skill: rpi-spec
+    role: requirements-analyst
+    required_when: Raw or externally defined requirements from tickets/chat/PR/PRD need normalization, or scope/AC/design questions need one implementation-neutral contract
+    outputs: [docs/specs/<slug>.md]
+    handoff_to: [research, greenfield-foundation]
+
+  - id: research
+    skill: rpi-research
+    role: forensic-investigator
+    required_when: Non-trivial change, cross-module work, or current behavior needs proof
+    outputs: [docs/scope-research/<slug>-research.md]
+    handoff_to: [plan]
+    decision_checkpoint: research-plan-readiness
+
+  - id: greenfield-foundation
+    skill: rpi-grillme
+    role: greenfield-interrogator
+    required_when: Repo absent, repo too thin for honest current-state research, or greenfield foundation decisions must be resolved before planning
+    outputs: [docs/scope-research/<slug>-foundation.md]
+    handoff_to: [plan]
+    decision_checkpoint: foundation-plan-readiness
+
+  - id: plan
+    skill: rpi-plan
+    role: delivery-architect
+    required_when: Multiple files/phases, sequenced verification, or design questions need resolution
+    outputs: [docs/scope-research/<slug>-plan.md, docs/scope-research/<slug>-design-discussion.md, docs/scope-research/<slug>-planned-structure.md]
+    handoff_to: [implement, review]
+
+  - id: implement
+    skill: rpi-implement
+    role: implementation-executor
+    required_when: Approved plan, validation during coding, or future resume point needed
+    outputs: [code changes, validation evidence]
+    handoff_to: [review]
+
+  - id: review
+    skill: rpi-review
+    role: post-implementation-reviewer
+    required_when: Post-implementation validation, or pre-impl planning quality check
+    outputs: [docs/scope-research/<slug>-review.md]
+    handoff_to: [spec, research, greenfield-foundation, plan, implement, improve-codebase-architecture]
+
+ordering_rules:
+  - Prefer context once per repo, not per story.
+  - Prefer spec before research or greenfield-foundation only when the source is raw, externally defined, or acceptance criteria need normalization.
+  - Direct brownfield work may start at research when scope is already clear enough.
+  - Direct greenfield work may start at greenfield-foundation when no separate formal requirement source needs normalization.
+  - Do not skip research for non-trivial changes in an existing codebase.
+  - If the repo is absent or too thin for honest current-state proof, use greenfield-foundation instead of fabricating research evidence.
+  - Do not start plan until research-plan-readiness or foundation-plan-readiness checkpoint passes.
+  - Do not reload repo-level context docs in plan or implement if the source artifact already carries task-relevant guardrails.
+  - Do not emit a final plan while ambiguity or unresolved design questions remain.
+  - Do not start implement until all artifacts exist, decisions are recorded, and the blocker is acceptable.
+  - If research disproves a spec premise, update spec before planning.
+  - If implementation invalidates assumptions or design decisions, return to spec/research/greenfield-foundation/plan before continuing.
+  - Do not start review until all required artifacts for the chosen mode exist.
+  - Post-impl: derive diff from planned-structure file list; ask for explicit diff base only if absent.
+  - Planning review: run artifact coherence only; skip code and architecture passes.
+  - For greenfield work, run context after the first real codebase slice exists, not before, so repo context is grounded in reality.
+
+decision_checkpoints:
+  research-plan-readiness:
+    applies_after_phase: research
+    required_before_phase: plan
+    pass_when:
+      - Verified facts separated from unknowns.
+      - Acceptance criteria tagged as already true, not true, or unknown when spec exists; otherwise key requested behaviors or goals are classified clearly enough for planning.
+      - Remaining blocker explicit; critical unknowns cleared or escalated.
+      - Slice code map present when class/interface relationships matter.
+      - Structure outline present when module placement or seams matter.
+      - Design-question evidence present when planning depends on a design choice.
+  foundation-plan-readiness:
+    applies_after_phase: greenfield-foundation
+    required_before_phase: plan
+    pass_when:
+      - Goals and non-goals remain aligned to the spec when one exists, or are explicit in the foundation artifact when no spec exists.
+      - Terminology decisions are explicit where fuzzy language mattered.
+      - Recommended stack and architecture shape are concrete enough to sequence work.
+      - Bootstrap shape and bootstrap commands are explicit.
+      - First vertical slice is defined.
+      - Critical unknowns are either resolved or isolated into explicit spikes.
+
+entry_gates:
+  context: [Confirm work is in new repo or existing context is stale/missing.]
+  spec: [Confirm raw or externally defined request from story/bug/ticket/chat/PR/PRD needs normalization.]
+  research: [Confirm spec exists or direct research is justified. Confirm non-trivial or cross-cutting existing-code work.]
+  greenfield-foundation: [Confirm spec exists or direct greenfield interrogation is justified. Confirm repo is absent or too thin for honest current-state research, or architecture/bootstrap decisions must be resolved before planning.]
+  plan: [Confirm source artifact exists and the matching readiness checkpoint passed. If spec exists, load it; if not, confirm the source artifact itself carries enough scope, goals, and constraints.]
+  implement: [Confirm source artifact and full plan pack exist. If spec exists, include it. Plan says Ready. Blocker acceptable. Worktree/branch matches context when branch-sensitive.]
+  review: [Confirm source artifact and plan pack exist. If spec exists, include it. Post-impl: confirm diff verifiable. Confirm mode.]
+
+exit_gates:
+  context:
+    - Project purpose repo-specific; build/test commands exact.
+    - Key workflows captured; structural hotspots named.
+    - Context docs linked (project-context.md → structure.md, state-graph.md).
+  spec:
+    - Goals/non-goals explicit; ACs observable and testable.
+    - Current-state matrix labels key requirements.
+    - Open questions surfaced; design questions material; implementation-neutral.
+  research:
+    - Facts separated from unknowns; matrix updated with evidence.
+    - Workflow trace when needed; slice code map and structure outline present.
+    - Design-question evidence explicit; no solution bias; plan-readiness verdict stated.
+  greenfield-foundation:
+    - Foundation artifact written; one-question-at-a-time grilling completed.
+    - Stack, architecture shape, bootstrap shape, and first vertical slice are explicit.
+    - Plan-readiness verdict stated; no fake current-state code evidence.
+  plan:
+    - Plan pack includes plan, design discussion, planned structure.
+    - Every task maps to a requirement/blocker when spec exists, or to source-artifact goals/decisions/blockers when spec is absent; every task has dependencies and rollback.
+    - When automation support is intended, task blocks use stable `T<n>` ids plus explicit `Files`, `Action`, `Depends on`, `Rollback`, `Parallel`, `Risk`, `Review required`, and `Verify` fields.
+    - Validation explicit; no task depends on unresolved critical unknowns.
+  implement:
+    - Every change maps to a planned task; traces to requirement/AC/blocker when spec exists, or to source-artifact goals/decisions/blockers when spec is absent.
+    - When the plan defines stable task metadata, completed/remaining/blocked work preserves the same `T<n>` ids and meanings in the implementation summary.
+    - Validation runs after meaningful edits and at final gate.
+    - Design decisions respected or escalated; handoff names files, results, risks.
+  review:
+    - Review doc written; every finding carries a route label.
+    - If spec exists, AC coverage table present and every spec AC mapped; otherwise coverage traces source-artifact goals/decisions and plan validation.
+    - When the plan defines stable task ids/metadata, review findings and coverage preserve those task ids instead of renaming the task surface ad hoc.
+    - Code/architecture passes only in post-impl mode; summary states next step.
+
+replan_triggers:
+  - Research disproves a spec premise.
+  - Upstream behavior differs from source work item.
+  - Plan relies on unverified seam, consolidator, or boundary.
+  - Implementation reaches outside researched module slice.
+  - Implementation requires a change not tied to a planned task or acceptance target.
+  - Build/test command cannot be stated exactly.
+  - Design question becomes ambiguous again.
+  - Design discussion or planned structure proves invalid.
+  - User clarification changes the accepted design path.
+
+roles:
+  systems-cartographer:
+    brief: Creates durable repo-level context for purpose, workflows, boundaries, hotspots, and architecture support docs.
+    primary_focus: [Project purpose, workflows, hotspots, module boundaries, exact build/test commands]
+    avoid: [Story-specific scope, implementation sequencing, class-by-class inventory]
+
+  requirements-analyst:
+    brief: Turns raw asks into a scoped, testable change contract with goals, non-goals, ACs, and design questions — no implementation.
+    primary_focus: [Goals, requirement normalization, scope shaping, acceptance design, design questions]
+    avoid: [Code proposals, invented symbols/files, hiding ambiguity]
+
+  forensic-investigator:
+    brief: Proves current behavior, traces code paths, maps affected slice structure, separates evidence from unknowns.
+    primary_focus: [Evidence-backed findings, workflow tracing, slice code maps, structure outlines]
+    avoid: [Premature solution bias, turning research into a plan, unbounded codebase wandering]
+
+  delivery-architect:
+    brief: Transforms verified gaps into a planning pack with decisions, structure, tasks, rollback, and validation.
+    primary_focus: [Requirement-to-task traceability, ambiguity resolution, design discussion, architecture patterns, sequencing]
+    avoid: [Tasks on unproven premises, vague test work, skipping dependency/contract risks]
+
+  implementation-executor:
+    brief: Executes planned tasks in validated batches, honors design decisions and structure, stops on drift.
+    primary_focus: [Planned task execution, traceability during coding, incremental validation, replan trigger detection]
+    avoid: [Unplanned scope, coding around blockers, skipping verification, untied changes]
+
+  greenfield-interrogator:
+    brief: Grills a new idea or too-thin codebase direction one question at a time until terminology, constraints, stack, bootstrap shape, and first-slice intent are concrete enough for planning.
+    primary_focus: [Terminology precision, explicit constraints, stack rationale, architecture shape, bootstrap shape, first-slice clarity]
+    avoid: [Fake code evidence, batching questions, vague brainstorming, drifting into task-level plan details too early]
+
+  post-implementation-reviewer:
+    brief: Validates artifact chain, two-axis code review (Standards + Spec), surfaces architecture opportunities, routes findings.
+    primary_focus: [Artifact chain coherence, two-axis code review, architecture deepening, per-finding routing]
+    avoid: [Re-implementing/re-planning during review, scope expansion beyond planned files, speculative candidates]
