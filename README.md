@@ -26,12 +26,12 @@ And the shared contract:
 
 ### From git
 ```bash
-pi install git:github.com/axwang/rpi-skills
+pi install git:github.com/alanw707/rpi-skills
 ```
 
 ### Pinned version
 ```bash
-pi install git:github.com/axwang/rpi-skills@v0.1.0
+pi install git:github.com/alanw707/rpi-skills@v0.1.0
 ```
 
 ### Local path (development)
